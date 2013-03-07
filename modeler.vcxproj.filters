@@ -1,0 +1,239 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{50b70916-440f-4653-aba8-9f262b66d748}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\FLTK">
+      <UniqueIdentifier>{3c78e607-0173-4509-a580-445f98ef9d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Curves">
+      <UniqueIdentifier>{8bd51e42-8db2-4fb5-87f5-7efa011e34dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{556aac9c-8694-46d3-b4e1-a6b7f46f9126}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{7d23830d-bfef-4fa0-84a5-5843dec9e7ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Scene">
+      <UniqueIdentifier>{89b43412-cc9c-4af3-b17c-0a576d53a573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Particles">
+      <UniqueIdentifier>{f8df4f58-8e2c-4078-9a82-9d6677511e4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{78d83ec4-39cc-43ce-826b-b4945f285915}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\FLTK">
+      <UniqueIdentifier>{6b92d373-678f-4d28-ac8a-8d3b0ab0faad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Curves">
+      <UniqueIdentifier>{68d5b17f-9633-43c2-a8cd-756473d0d832}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{5297850a-6531-4218-b807-373b89d03311}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Scene">
+      <UniqueIdentifier>{83a804f7-0792-4a75-91f0-a950c5ebed46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utilities">
+      <UniqueIdentifier>{3c0e2a8f-26a1-42ee-860a-662508033342}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Particles">
+      <UniqueIdentifier>{738fc561-f182-4c55-b889-de25029a798f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{6c3fc11a-cbe5-4fd0-96b5-6624d95aad60}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FL\Fl_Tree.cxx">
+      <Filter>Source Files\FLTK</Filter>
+    </ClCompile>
+    <ClCompile Include="FL\Fl_Tree_Item.cxx">
+      <Filter>Source Files\FLTK</Filter>
+    </ClCompile>
+    <ClCompile Include="FL\Fl_Tree_Item_Array.cxx">
+      <Filter>Source Files\FLTK</Filter>
+    </ClCompile>
+    <ClCompile Include="FL\Fl_Tree_Prefs.cxx">
+      <Filter>Source Files\FLTK</Filter>
+    </ClCompile>
+    <ClCompile Include="curve.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="curveevaluator.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="linearcurveevaluator.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="file dialog\Fl_Native_File_Chooser.cxx">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="graphwidget.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="indicatorwindow.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="modelerdraw.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="modelerui.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="modelerview.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="glew\src\glew.c">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="imageio.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="point.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="rect.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="vault.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="vect.c">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="cameras.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="particleSystem.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="properties.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="sample.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="rijndael.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="shaders.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="trackball.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FL\Fl_Export.H">
+      <Filter>Header Files\FLTK</Filter>
+    </ClInclude>
+    <ClInclude Include="FL\Fl_Tree.H">
+      <Filter>Header Files\FLTK</Filter>
+    </ClInclude>
+    <ClInclude Include="FL\Fl_Tree_Item.H">
+      <Filter>Header Files\FLTK</Filter>
+    </ClInclude>
+    <ClInclude Include="FL\Fl_Tree_Item_Array.H">
+      <Filter>Header Files\FLTK</Filter>
+    </ClInclude>
+    <ClInclude Include="FL\Fl_Tree_Prefs.H">
+      <Filter>Header Files\FLTK</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="indicatorwindow.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="modelerdraw.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="modelerui.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="modelerview.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="property_dialog.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="trackball.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="properties.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="robotarm.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="imageio.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="mat.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="vec.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="vect.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="vault.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="rijndael.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuildStep Include="shader.frag">
+      <Filter>Source Files\Scene</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="shader.vert">
+      <Filter>Source Files\Scene</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="curve.h">
+      <Filter>Header Files\Curves</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="curveevaluator.h">
+      <Filter>Header Files\Curves</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="linearcurveevaluator.h">
+      <Filter>Header Files\Curves</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="graphwidget.h">
+      <Filter>Header Files\UI</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="cameras.h">
+      <Filter>Header Files\Scene</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="particleSystem.h">
+      <Filter>Header Files\Scene</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="point.h">
+      <Filter>Header Files\Utilities</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="rect.h">
+      <Filter>Header Files\Utilities</Filter>
+    </CustomBuildStep>
+  </ItemGroup>
+</Project>
