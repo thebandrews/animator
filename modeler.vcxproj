@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C51A062E-03C8-4293-8DC5-11F1C254EE3A}</ProjectGuid>
     <RootNamespace>modeler</RootNamespace>
+    <ProjectName>animator</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -151,6 +152,7 @@
     <ClCompile Include="modelerdraw.cpp" />
     <ClCompile Include="modelerui.cpp" />
     <ClCompile Include="modelerview.cpp" />
+    <ClCompile Include="MyModel.cpp" />
     <ClCompile Include="rijndael.cpp" />
     <ClCompile Include="shaders.cpp" />
     <ClCompile Include="glew\src\glew.c" />
@@ -204,6 +206,7 @@
     <ClInclude Include="modelerview.h" />
     <ClInclude Include="property_dialog.h" />
     <ClInclude Include="rijndael.h" />
+    <ClInclude Include="MyModel.h" />
     <ClInclude Include="trackball.h" />
     <CustomBuildStep Include="cameras.h">
     </CustomBuildStep>

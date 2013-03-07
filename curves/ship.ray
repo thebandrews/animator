@@ -1,0 +1,8 @@
+SBT-raytracer 1.0
+
+camera {
+	position = (0.000000, 10.000000, 17.320507);
+	look_at = (0.000000, 0.000000, 0.000000);
+	aspectratio = 1
+	fov = 30; }
+

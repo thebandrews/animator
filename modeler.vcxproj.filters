@@ -135,6 +135,9 @@
     <ClCompile Include="trackball.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="MyModel.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FL\Fl_Export.H">
@@ -202,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="rijndael.h">
       <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="MyModel.h">
+      <Filter>Header Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

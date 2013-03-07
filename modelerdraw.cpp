@@ -1,4 +1,5 @@
 #include "modelerdraw.h"
+#include "vec.h"
 #include <FL/gl.h>
 #include <GL/glu.h>
 #include <cstdio>
@@ -470,19 +471,38 @@ int write_revolution_rayfile(FILE* rayfile, int num_vertices, int num_triangles,
 	return 0;
 }
 
+
+void drawRevolution(std::string curve_file, int scale)
+{
+    std::string fileName = "curves/" + curve_file;
+    int load_ret = load_2dcurve_txt( fileName.c_str(), &revolution_pts );
+    if ( load_ret < 0 ) {
+        printf( "Cannot open curve file.\n" );
+        return;
+    }
+
+    drawRevolution(scale);
+}
+
+
 void drawRevolution(double scale)
 {
-	if ( revolution_pts.empty() ) {
-		return;
-	}
+    if ( revolution_pts.empty() ) {
+        return;
+    }
     ModelerDrawState *mds = ModelerDrawState::Instance();
 
-	_setupOpenGl();
-	if (mds->m_rayFile)
-	{
-		// write into rayfile
-	} else    
+    _setupOpenGl();
+
+    if (mds->m_rayFile)
     {
+        // write into rayfile
+    }
+    else
+    {
+        //
+        // Number of bands in the rotation
+        //
         int divisions; 
         switch(mds->m_quality)
         {
@@ -496,73 +516,228 @@ void drawRevolution(double scale)
             divisions = 8; break;
         }
 
-		const float PI = 3.141592653589793238462643383279502f;
+        const float PI = 3.14159265f;
 
-		float origin_y = 1.13132490911795f;
-		float origin_z = -3.0f;
+        float origin_y = 1.0;
+        float origin_z = -3.0f;
 
-		int num_pts = revolution_pts.size();
-		for ( int i=0; i<6; ++ i ) {
-			// This implementation uses glBegin(GL_TRIANGLES)/glend() and has trivial normals and texture coordinates.
-			// It is OK to start from the code below for developing and testing,
-			// but please use glDrawElements() with GL_TRIANGES to draw the surface in the final code.
-			// It is a naive version of surface of revolution created by translating a curve along a straight line.
-			// You need to rotate the curve to create a more interesting shape. Also, please create your own curve with the curve editor tool. Good luck!						
-			for ( int j=1; j<num_pts; ++ j ) {				
+        int num_pts = revolution_pts.size();
 
-				float p1_x = (float)(revolution_pts[j-1].x * scale);
-				float p1_y = (float)(revolution_pts[j-1].y * scale + origin_y);
-				float p1_z = i+origin_z;
+        float * vertices = new float[3*num_pts*360]; 
+        float * normals = new float[3*num_pts*360];
 
-				float p2_x = (float)(revolution_pts[j].x * scale);
-				float p2_y = (float)(revolution_pts[j].y * scale + origin_y);
-				float p2_z = p1_z;
+        GLuint * indices = new GLuint[6*num_pts*360];
+        float * texture_uv = new float[2*num_pts*360];
 
-				float p3_x = p1_x;
-				float p3_y = p1_y;
-				float p3_z = p1_z+1;
+        int v_idx = 0;
+        int n_idx = 0;
+        int i_idx = 0;
+        int t_idx = 0;
 
-				float p4_x = p2_x;
-				float p4_y = p2_y;
-				float p4_z = p3_z;
+        int idx_offset = 0;
 
-				// You must compute the normal directions add texture coordinates, see lecture notes
-				float n1_x = 1;
-				float n1_y = 0;
-				float n1_z = 0;
-				float texture_u = 1.0f;
-				float texture_v = 1.0f;
+        float step_size = (float)(360.0 / divisions);
+        float rotation = 0.0;
 
-				glBegin(GL_TRIANGLES);
-					glNormal3f(n1_x,n1_y,n1_z);
-					glTexCoord2f( texture_u, texture_v);
-					glVertex3f(p1_x, p1_y, p1_z);
-					
-					glNormal3f(n1_x,n1_y,n1_z);
-					glTexCoord2f( texture_u, texture_v);
-					glVertex3f(p2_x, p2_y, p2_z);
+        ///////////////////////////////////////////////////////////////////////
+        //
+        // Compute Triangle mesh vertices, indices and texture arrays
+        //
+        // Rotate around the y-axis in chunks of step_size. For each step compute triangle matrix
+        // consisting of 4 points. Also, at each vertex compute normals and texture coordinates.
+        //
+        // This implementation uses glDrawElements
+        //
+        while(rotation <= 360)
+        {
+            float radian = rotation * (PI / 180);
 
-					glNormal3f(n1_x,n1_y,n1_z);
-					glTexCoord2f( texture_u, texture_v);
-					glVertex3f(p3_x, p3_y, p3_z);
-				glEnd();
+            for ( int j=0; j<num_pts; j++ ) {
 
-				glBegin(GL_TRIANGLES);
-					glNormal3f(n1_x,n1_y,n1_z);
-					glTexCoord2f( texture_u, texture_v);
-					glVertex3f(p3_x, p3_y, p3_z);					
-					
-					glNormal3f(n1_x,n1_y,n1_z);
-					glTexCoord2f( texture_u, texture_v);
-					glVertex3f(p2_x, p2_y, p2_z);
+                //
+                // Compute Pt
+                //
+                float size1 = (float)(revolution_pts[j].x * scale);
+                vertices[v_idx++] = cos(radian)*(size1);
+                vertices[v_idx++] = (float)(revolution_pts[j].y * scale + origin_y);
+                vertices[v_idx++] = sin(radian)*(size1);
+                texture_uv[t_idx++] = radian / (2*PI);  // s
+                texture_uv[t_idx++] = (float)(j)/num_pts;  // t
 
-					glNormal3f(n1_x,n1_y,n1_z);
-					glTexCoord2f( texture_u, texture_v);
-					glVertex3f(p4_x, p4_y, p4_z);
-				glEnd();
-			}			
-		}
-		
+
+                //
+                // Check to make sure we aren't at the end of the points array.
+                //
+                if(j<num_pts-1)
+                {
+                    //
+                    // Setup indices matrix
+                    //
+                    if(rotation + step_size <= 360)
+                    {
+                        if(j < (num_pts - 1))
+                        {
+                            indices[i_idx++] = 0 + idx_offset;
+                            indices[i_idx++] = 1 + idx_offset;
+                            indices[i_idx++] = 1 + idx_offset + num_pts;
+                        }
+
+                        indices[i_idx++] = 0 + idx_offset;
+                        indices[i_idx++] = 1 + idx_offset + num_pts;
+                        indices[i_idx++] = 0 + idx_offset + num_pts;
+                    }
+                    else // Handle last set of vertices in the matrix
+                    {
+                        if(j < (num_pts - 1))
+                        {
+                            indices[i_idx++] = 0 + idx_offset;
+                            indices[i_idx++] = 1 + idx_offset;
+                            indices[i_idx++] = 1 + (idx_offset % num_pts);
+                        }
+
+                        indices[i_idx++] = 0 + idx_offset;
+                        indices[i_idx++] = 1 + (idx_offset % num_pts);
+                        indices[i_idx++] = 0 + (idx_offset % num_pts);
+                    }
+                }
+
+                idx_offset++;
+
+            } //for()
+
+            rotation += step_size;
+        } // while()
+
+
+        /////////////////////////////////////////////////////////////
+        //// Normal Calculations
+        /////////////////////////////////////////////////////////////
+        int wrap_idx = 0;
+
+        for (int vert_idx2 = 0; vert_idx2*3 < v_idx; vert_idx2++)
+        {
+            //
+            // Compute 3 points to take the cross product on which will give us the normal
+            //
+            float p1_x = vertices[vert_idx2*3];
+            float p1_y = vertices[vert_idx2*3+1];
+            float p1_z = vertices[vert_idx2*3+2];
+
+            float p2_x = vertices[vert_idx2*3+3];
+            float p2_y = vertices[vert_idx2*3+4];
+            float p2_z = vertices[vert_idx2*3+5];
+
+            float p3_x;
+            float p3_y;
+            float p3_z;
+
+
+            //
+            // Handle cases at the origin
+            //
+            if(vert_idx2 % num_pts == 0)
+            {
+                normals[n_idx++] = 0;
+                normals[n_idx++] = 1;
+                normals[n_idx++] = 0;
+            }
+            else if((vert_idx2+1) % num_pts == 0)
+            {
+                normals[n_idx++] = 0;
+                normals[n_idx++] = -1;
+                normals[n_idx++] = 0;
+            }
+            else
+            {
+                //
+                // Handle typical non-edge case
+                //
+                if((vert_idx2*3 + num_pts*3) < v_idx)
+                {
+                    p3_x = vertices[(vert_idx2)*3+num_pts*3];
+                    p3_y = vertices[(vert_idx2)*3+num_pts*3+1];
+                    p3_z = vertices[(vert_idx2)*3+num_pts*3+2];
+
+                    // (p2 - p1)
+                    Vec3f vec_1(p2_x - p1_x,
+                        p2_y - p1_y,
+                        p2_z - p1_z);
+
+                    // (p3 - p1)
+                    Vec3f vec_2(p3_x - p1_x,
+                        p3_y - p1_y,
+                        p3_z - p1_z);
+
+                    Vec3f tempNormal = vec_2 ^ vec_1;
+                    tempNormal.normalize();
+
+                    normals[n_idx++] = tempNormal[0];
+                    normals[n_idx++] = tempNormal[1];
+                    normals[n_idx++] = tempNormal[2];
+                }
+                else
+                {
+                    //
+                    // Handle vertices that have wrapped around the y-axis
+                    // P3 is actually equal to the first set of vertices
+                    //
+                    p3_x = vertices[(vert_idx2 % num_pts)*3+num_pts*3];
+                    p3_y = vertices[(vert_idx2 % num_pts)*3+num_pts*3+1];
+                    p3_z = vertices[(vert_idx2 % num_pts)*3+num_pts*3+2];
+
+                    // (p2 - p1)
+                    Vec3f vec_1(p2_x - p1_x,
+                                p2_y - p1_y,
+                                p2_z - p1_z);
+
+                    // (p3 - p1)
+                    Vec3f vec_2(p3_x - p1_x,
+                                p3_y - p1_y,
+                                p3_z - p1_z);
+
+                    Vec3f tempNormal = vec_2 ^ vec_1;
+                    tempNormal.normalize();
+
+                    normals[n_idx++] = tempNormal[0];
+                    normals[n_idx++] = tempNormal[1];
+                    normals[n_idx++] = tempNormal[2];
+                }
+            }
+
+        }
+
+        normals[n_idx++] = 0;
+        normals[n_idx++] = -1;
+        normals[n_idx++] = 0;
+
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glVertexPointer(3, GL_FLOAT, 0, vertices);
+        glNormalPointer(GL_FLOAT,0,normals);
+        glTexCoordPointer(2,GL_FLOAT,0,texture_uv);
+        glDrawElements(GL_TRIANGLES, i_idx, GL_UNSIGNED_INT, indices);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
+
+        ////
+        //// Write revolution ray file
+        ////
+        //std::string fileName = "curve_rayfile.ray";
+        //openRayFile(fileName.c_str());
+
+        //write_revolution_rayfile(mds->m_rayFile, v_idx, v_idx, vertices, normals, indices, texture_uv);
+
+
+        //
+        // Clean up
+        //
+        delete [] vertices;
+        delete [] normals;
+        delete [] indices;
+        delete [] texture_uv;
     }
 }
 
