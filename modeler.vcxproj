@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bezier.cpp" />
     <ClCompile Include="FL\Fl_Tree.cxx" />
     <ClCompile Include="FL\Fl_Tree_Item.cxx" />
     <ClCompile Include="FL\Fl_Tree_Item_Array.cxx" />
@@ -185,6 +186,7 @@
     </CustomBuildStep>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="beziercurveevaluator.h" />
     <ClInclude Include="FL\Fl_Export.H" />
     <ClInclude Include="FL\Fl_Tree.H" />
     <ClInclude Include="FL\Fl_Tree_Item.H" />

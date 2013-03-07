@@ -138,6 +138,9 @@
     <ClCompile Include="MyModel.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Bezier.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FL\Fl_Export.H">
@@ -208,6 +211,9 @@
     </ClInclude>
     <ClInclude Include="MyModel.h">
       <Filter>Header Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="beziercurveevaluator.h">
+      <Filter>Header Files\Curves</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
