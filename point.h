@@ -13,20 +13,25 @@ class Point
 {
 public:
 
-	Point(void);
-	Point(const float& x, const float& y);
+    Point(void);
+    Point(const float& x, const float& y);
 
-	void toStream(std::ostream& output_stream) const;
-	void fromStream(std::istream& input_stream);
+    void toStream(std::ostream& output_stream) const;
+    void fromStream(std::istream& input_stream);
 
-	float distance(const Point& p) const {
-		float xd = x - p.x;
-		float yd = y - p.y;
-		return sqrtf(xd * xd + yd * yd);
-	}
+    float distance(const Point& p) const {
+        float xd = x - p.x;
+        float yd = y - p.y;
+        return sqrtf(xd * xd + yd * yd);
+    }
 
-	float x;
-	float y;
+    // Arithmetic operators for convenience
+    Point operator+( const Point& a ) { return Point((x+a.x),(y+a.y)); }
+    Point operator-( const Point& a ) { return Point((x-a.x),(y-a.y)); }
+    Point operator*( const double& a ) { return Point((x*a),(y*a)); }
+
+    float x;
+    float y;
 };
 
 std::ostream& operator<<(std::ostream& output_stream, const Animator::Point& point);

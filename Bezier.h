@@ -1,5 +1,5 @@
-#ifndef INCLUDED_BEZIER_CURVE_EVALUATOR_H
-#define INCLUDED_BEZIER_CURVE_EVALUATOR_H
+#ifndef INCLUDED_BEZIER_H
+#define INCLUDED_BEZIER_H
 
 #pragma warning(disable : 4786)  
 #pragma warning(disable : 4018)

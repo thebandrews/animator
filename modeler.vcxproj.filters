@@ -141,6 +141,9 @@
     <ClCompile Include="Bezier.cpp">
       <Filter>Source Files\Curves</Filter>
     </ClCompile>
+    <ClCompile Include="CatmullRom.cpp">
+      <Filter>Source Files\Curves</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FL\Fl_Export.H">
@@ -212,7 +215,10 @@
     <ClInclude Include="MyModel.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="beziercurveevaluator.h">
+    <ClInclude Include="CatmullRom.h">
+      <Filter>Header Files\Curves</Filter>
+    </ClInclude>
+    <ClInclude Include="Bezier.h">
       <Filter>Header Files\Curves</Filter>
     </ClInclude>
   </ItemGroup>
