@@ -1,5 +1,7 @@
 #include "beziercurveevaluator.h"
+#include "vec.h"
 #include <cassert>
+
 using namespace Animator;
 
 void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts, 
@@ -11,40 +13,86 @@ void BezierCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPts,
     int iCtrlPtCount = ptvCtrlPts.size();
     ptvEvaluatedCurvePts.clear();
 
-    ptvEvaluatedCurvePts.assign(ptvCtrlPts.begin(), ptvCtrlPts.end());
-
     float x = 0.0;
-    float y1;
-
-    if (bWrap) {
-        // if wrapping is on, interpolate the y value at xmin and
-        // xmax so that the slopes of the lines adjacent to the
-        // wraparound are equal.
-
-        if ((ptvCtrlPts[0].x + fAniLength) - ptvCtrlPts[iCtrlPtCount - 1].x > 0.0f) {
-            y1 = (ptvCtrlPts[0].y * (fAniLength - ptvCtrlPts[iCtrlPtCount - 1].x) + 
-                  ptvCtrlPts[iCtrlPtCount - 1].y * ptvCtrlPts[0].x) /
-                 (ptvCtrlPts[0].x + fAniLength - ptvCtrlPts[iCtrlPtCount - 1].x);
-        }
-        else 
-            y1 = ptvCtrlPts[0].y;
-    }
-    else {
-        // if wrapping is off, make the first and last segments of
-        // the curve horizontal.
-
-        y1 = ptvCtrlPts[0].y;
-    }
+    float y1 = ptvCtrlPts[0].y;
 
     ptvEvaluatedCurvePts.push_back(Point(x, y1));
 
-    /// set the endpoint based on the wrap flag.
     float y2;
     x = fAniLength;
-    if (bWrap)
-        y2 = y1;
-    else
-        y2 = ptvCtrlPts[iCtrlPtCount - 1].y;
+
+    y2 = ptvCtrlPts[iCtrlPtCount - 1].y;
 
     ptvEvaluatedCurvePts.push_back(Point(x, y2));
+
+    //
+    // Loop through control points in chunks of 4 where the previous 
+    // set of 4 points last point == first point for next set.
+    //
+    // In order to compute a bezier curve we need at least 4
+    // control points. Any dangling control points or curves
+    // that have fewer than 4 control points get copied over to
+    // the evaluated curve points vector.
+    //
+    int i = 3;
+    int j = 0;
+    while(i < iCtrlPtCount)
+    {
+        j = i;
+        //
+        // Save our control points as vectors
+        //
+        Vec3d V0 = Vec3d(ptvCtrlPts[i-3].x, ptvCtrlPts[i-3].y, 1);
+        Vec3d V1 = Vec3d(ptvCtrlPts[i-2].x, ptvCtrlPts[i-2].y, 1);
+        Vec3d V2 = Vec3d(ptvCtrlPts[i-1].x, ptvCtrlPts[i-1].y, 1);
+        Vec3d V3 = Vec3d(ptvCtrlPts[i].x, ptvCtrlPts[i].y, 1);
+
+        //
+        // Add the first and last control point in the group of 4
+        //
+        ptvEvaluatedCurvePts.push_back(Point(V0[0], V0[1]));
+        ptvEvaluatedCurvePts.push_back(Point(V3[0], V3[1]));
+
+        //
+        // Vary u between 0-1 (100 subdivisions)
+        //
+        for(float u = 0.0; u < 1.0; u+=0.01)
+        {
+            //
+            // Solve for Q(u)
+            //
+            Vec3d Qu = (((1 - u)*(1 - u)*(1 - u))*V0) +
+                ((3*u)*((1-u)*(1-u))*V1) +
+                ((3*(u*u))*(1-u)*V2) +
+                ((u*u*u)*V3);
+
+
+            ptvEvaluatedCurvePts.push_back(Point(Qu[0], Qu[1]));
+        }
+
+        // Increment counter
+        i+=3;
+    }
+
+
+    //
+    // Do we have any dangling control points? Handle them here
+    //
+    if(j > 0){
+        // 
+        // If j > 0 this means we have already processed some
+        // points and incremented j in intervals of 3 so go to
+        // next point. If j == 0 then we don't have enough
+        // points to compute a bezier curve so just copy
+        // the points from the control vector.
+        //
+        j++;
+    }
+
+    while(j < iCtrlPtCount)
+    {
+        ptvEvaluatedCurvePts.push_back(Point(ptvCtrlPts[j].x, ptvCtrlPts[j].y));
+        j++;
+    }
+
 }
