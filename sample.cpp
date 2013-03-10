@@ -43,7 +43,7 @@ public:
     ParticleSystem ps;
 
     /** Modeler calls this to get our particle system. */
-    ParticleSystem* getParticleSystem() { return NULL; }
+    ParticleSystem* getParticleSystem() { return _myModel_1.getParticleSystem(); }
 
     /** Construct the scene */
     Scene() :

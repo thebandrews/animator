@@ -14,6 +14,10 @@
 
 class MyModel : public Model {
 protected:
+    ///////////////////////////////// PARTICLES ///////////////////////////////////
+    ParticleSystem ps;
+
+
     ///////////////////////////////// TEXTURES ////////////////////////////////////
     Texture2D texture;
 
@@ -81,7 +85,7 @@ public:
         // You have to call the parent class's constructor, to provide a
         // name for the model.
         Model("MyModel"),
-
+        ps(),
         // Construct textures and shaders. 
         // They won't be loaded until the model is drawn for the first time.
         texture("Wood4.png"),
@@ -140,7 +144,8 @@ public:
         // in the top left corner of Modeler, under this model's entry:
 
         // Finally, add all the properties to this model's PropertyGroup.
-        properties.add(&rotateX)
+        properties.add(&ps.restitution)
+                  .add(&rotateX)
                   .add(&rotateY)
                   .add(&NeckRotateX)
                   .add(&NeckRotateZ)
@@ -171,12 +176,12 @@ public:
                   .add(&LFootRotateZ)
                   .add(&RFootRotateX)
                   .add(&RFootRotateZ);
-
     }
 
     //
     // Public methods
     //
+    ParticleSystem* getParticleSystem();
     void load();
     void tick();
     void drawModel();

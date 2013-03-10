@@ -21,6 +21,16 @@ void MyModel::load() {
     sky.load();
 }
 
+
+//
+// Return the particle system used by animator
+//
+ParticleSystem* MyModel::getParticleSystem() 
+{ 
+    return &ps;
+}
+
+
 /**
 * Modeler calls this method many times a second when the Animate
 * checkbox is checked.
