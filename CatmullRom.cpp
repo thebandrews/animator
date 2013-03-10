@@ -13,67 +13,51 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
     int iCtrlPtCount = ptvCtrlPts.size();
     ptvEvaluatedCurvePts.clear();
 
-    float x = 0.0;
-    float y1 = ptvCtrlPts[0].y;
-
-    ptvEvaluatedCurvePts.push_back(Point(x, y1));
-
-    float y2;
-    x = fAniLength;
-
-    y2 = ptvCtrlPts[iCtrlPtCount - 1].y;
-
-    ptvEvaluatedCurvePts.push_back(Point(x, y2));
-
-    //
-    // Loop through control points in chunks of 4 where the previous 
-    // set of 4 points last point == first point for next set.
-    //
-    // In order to compute a bezier curve we need at least 4
-    // control points. Any dangling control points or curves
-    // that have fewer than 4 control points get copied over to
-    // the evaluated curve points vector.
-    //
-    int i = 2;
+    int i = 3;
     int j = 0;
-    while((i+1) < iCtrlPtCount)
+    while(i < iCtrlPtCount)
     {
         j = i;
-        //
-        // Save P0 as part of the curve
-        //
-        ptvEvaluatedCurvePts.push_back(Point(ptvCtrlPts[i-2].x, ptvCtrlPts[i-2].y));
 
+        printf("Control Points[%d] = (%f,%f)\n", i, ptvCtrlPts[i-3].x, ptvCtrlPts[i-3].y);
+        printf("Control Points[%d] = (%f,%f)\n", i, ptvCtrlPts[i-2].x, ptvCtrlPts[i-2].y);
+        printf("Control Points[%d] = (%f,%f)\n", i, ptvCtrlPts[i-1].x, ptvCtrlPts[i-1].y);
+        printf("Control Points[%d] = (%f,%f)\n", i, ptvCtrlPts[i].x, ptvCtrlPts[i].y);
 
-        //
-        // Save our control points as vectors
-        //
-        Vec3d V0 = Vec3d(ptvCtrlPts[i-1].x, ptvCtrlPts[i-1].y, 1);      //P1
-        Vec3d V3 = Vec3d(ptvCtrlPts[i].x, ptvCtrlPts[i].y, 1);      //P2
+        Vec3d V0 = Vec3d(ptvCtrlPts[i-2].x, ptvCtrlPts[i-2].y, 1);      //P1
+        Vec3d V3 = Vec3d(ptvCtrlPts[i-1].x, ptvCtrlPts[i-1].y, 1);      //P2
 
-        //
-        // Add V0, V3 to evaluated curve
-        //
-        ptvEvaluatedCurvePts.push_back(Point(V0[0], V0[1]));
-        ptvEvaluatedCurvePts.push_back(Point(V3[0], V3[1]));
+        Point P0 = Point(ptvCtrlPts[i-3].x, ptvCtrlPts[i-3].y);
+        Point P1 = Point(ptvCtrlPts[i-2].x, ptvCtrlPts[i-2].y);
+        Point P2 = Point(ptvCtrlPts[i-1].x, ptvCtrlPts[i-1].y);
+        Point P3 = Point(ptvCtrlPts[i].x, ptvCtrlPts[i].y);
 
         //
-        // Compute V1, V2
+        // Compute V1
         //
-        Point P0 = Point(ptvCtrlPts[i-2].x, ptvCtrlPts[i-2].y);
-        Point P1 = Point(ptvCtrlPts[i-1].x, ptvCtrlPts[i-1].y);
-        Point P2 = Point(ptvCtrlPts[i].x, ptvCtrlPts[i].y);
-        Point P3 = Point(ptvCtrlPts[i+1].x, ptvCtrlPts[i+1].y);
+        Point PV1 = Point(P2.x - P0.x, P2.y - P0.y);
+        PV1.x = (PV1.x/6);
+        PV1.y = (PV1.y/6);
+        PV1.x += P1.x;
+        PV1.y += P1.y;
 
-        Point PV1 = P1 + (P2-P0)*(1/6);
-        Point PV2 = P2 - (P3-P1)*(1/6);
+        //
+        // Compute V2
+        //
+        Point PV2 = Point(P3.x - P1.x, P3.y - P1.y);
+        PV2.x = -(PV2.x/6);
+        PV2.y = -(PV2.y/6);
+        PV2.x += P2.x;
+        PV2.y += P2.y;
+
+        printf("V0 = (%f,%f)\n", ptvCtrlPts[i-2].x, ptvCtrlPts[i-2].y);
+        printf("V1 = (%f,%f)\n", PV1.x, PV1.y);
+        printf("V2 = (%f,%f)\n", PV2.x, PV2.y);
+        printf("V3 = (%f,%f)\n", ptvCtrlPts[i-1].x, ptvCtrlPts[i-1].y);
 
         Vec3d V1 = Vec3d(PV1.x, PV1.y, 1);
         Vec3d V2 = Vec3d(PV2.x, PV2.y, 1);
 
-        //
-        // Vary u between 0-1 (100 subdivisions)
-        //
         for(float u = 0.0; u < 1.0; u+=0.01)
         {
             //
@@ -88,9 +72,95 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
             ptvEvaluatedCurvePts.push_back(Point(Qu[0], Qu[1]));
         }
 
-        // Increment counter
-        i+=2;
+        i++;
     }
+
+    //
+    // Linear curve:
+    //
+    //ptvEvaluatedCurvePts.assign(ptvCtrlPts.begin(), ptvCtrlPts.end());
+    //float x = 0.0;
+    //float y1 = ptvCtrlPts[0].y;
+
+    //ptvEvaluatedCurvePts.push_back(Point(x, y1));
+    //float x = 0.0;
+    //float y1 = ptvCtrlPts[0].y;
+
+    //
+
+    //float y2;
+    //x = fAniLength;
+
+    //y2 = ptvCtrlPts[iCtrlPtCount - 1].y;
+
+    //ptvEvaluatedCurvePts.push_back(Point(x, y2));
+
+    ////
+    //// Loop through control points in chunks of 4 where the previous 
+    //// set of 4 points last point == first point for next set.
+    ////
+    //// In order to compute a bezier curve we need at least 4
+    //// control points. Any dangling control points or curves
+    //// that have fewer than 4 control points get copied over to
+    //// the evaluated curve points vector.
+    ////
+    //int i = 2;
+    //int j = 0;
+    //while((i+1) < iCtrlPtCount)
+    //{
+    //    j = i;
+    //    //
+    //    // Save P0 as part of the curve
+    //    //
+    //    ptvEvaluatedCurvePts.push_back(Point(ptvCtrlPts[i-2].x, ptvCtrlPts[i-2].y));
+
+
+    //    //
+    //    // Save our control points as vectors
+    //    //
+    //    Vec3d V0 = Vec3d(ptvCtrlPts[i-1].x, ptvCtrlPts[i-1].y, 1);      //P1
+    //    Vec3d V3 = Vec3d(ptvCtrlPts[i].x, ptvCtrlPts[i].y, 1);      //P2
+
+    //    //
+    //    // Add V0, V3 to evaluated curve
+    //    //
+    //    ptvEvaluatedCurvePts.push_back(Point(V0[0], V0[1]));
+    //    ptvEvaluatedCurvePts.push_back(Point(V3[0], V3[1]));
+
+    //    //
+    //    // Compute V1, V2
+    //    //
+    //    Point P0 = Point(ptvCtrlPts[i-2].x, ptvCtrlPts[i-2].y);
+    //    Point P1 = Point(ptvCtrlPts[i-1].x, ptvCtrlPts[i-1].y);
+    //    Point P2 = Point(ptvCtrlPts[i].x, ptvCtrlPts[i].y);
+    //    Point P3 = Point(ptvCtrlPts[i+1].x, ptvCtrlPts[i+1].y);
+
+    //    Point PV1 = P1 + (P2-P0)*(1/6);
+    //    Point PV2 = P2 - (P3-P1)*(1/6);
+
+    //    Vec3d V1 = Vec3d(PV1.x, PV1.y, 1);
+    //    Vec3d V2 = Vec3d(PV2.x, PV2.y, 1);
+
+    //    //
+    //    // Vary u between 0-1 (100 subdivisions)
+    //    //
+    //    for(float u = 0.0; u < 1.0; u+=0.01)
+    //    {
+    //        //
+    //        // Solve for Q(u)
+    //        //
+    //        Vec3d Qu = (((1 - u)*(1 - u)*(1 - u))*V0) +
+    //            ((3*u)*((1-u)*(1-u))*V1) +
+    //            ((3*(u*u))*(1-u)*V2) +
+    //            ((u*u*u)*V3);
+
+
+    //        ptvEvaluatedCurvePts.push_back(Point(Qu[0], Qu[1]));
+    //    }
+
+    //    // Increment counter
+    //    i+=2;
+    //}
 
 
     //

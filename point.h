@@ -26,9 +26,9 @@ public:
     }
 
     // Arithmetic operators for convenience
-    Point operator+( const Point& a ) { return Point((x+a.x),(y+a.y)); }
-    Point operator-( const Point& a ) { return Point((x-a.x),(y-a.y)); }
-    Point operator*( const double& a ) { return Point((x*a),(y*a)); }
+    //Point operator+( const Point& a ) { return Point((x+a.x),(y+a.y)); }
+    //Point operator-( const Point& a ) { return Point((x-a.x),(y-a.y)); }
+    //Point operator*( const double& a ) { return Point((x*a),(y*a)); }
 
     float x;
     float y;
