@@ -24,7 +24,24 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
     interpolatedPoints.insert(it+1, ptvCtrlPts.begin(), ptvCtrlPts.end());
     interpolatedPoints.push_back(ptvCtrlPts.back());
 
+    //
+    // Add the first point from the list of control points
+    // so the animation doesn't have a gap at the beginning.
+    //
+    float x = 0.0;
+    float y1 = interpolatedPoints[0].y;
+    ptvEvaluatedCurvePts.push_back(Point(x, y1));
+
+
     int iCtrlPtCount = interpolatedPoints.size();
+
+    //
+    // Add a point equal to the final point in the animation
+    // so the animation doesn't have a gap at the end.
+    //
+    float y2 = interpolatedPoints[iCtrlPtCount - 1].y;;
+    x = fAniLength;
+    ptvEvaluatedCurvePts.push_back(Point(x, y2));
 
 
     //
@@ -35,11 +52,6 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
     int i = 3;
     while(i < iCtrlPtCount)
     {
-        printf("Control Points[%d] = (%f,%f)\n", i-3, interpolatedPoints[i-3].x, interpolatedPoints[i-3].y);
-        printf("Control Points[%d] = (%f,%f)\n", i-2, interpolatedPoints[i-2].x, interpolatedPoints[i-2].y);
-        printf("Control Points[%d] = (%f,%f)\n", i-1, interpolatedPoints[i-1].x, interpolatedPoints[i-1].y);
-        printf("Control Points[%d] = (%f,%f)\n", i, interpolatedPoints[i].x, interpolatedPoints[i].y);
-
         Vec3d V0 = Vec3d(interpolatedPoints[i-2].x, interpolatedPoints[i-2].y, 1);      //P1
         Vec3d V3 = Vec3d(interpolatedPoints[i-1].x, interpolatedPoints[i-1].y, 1);      //P2
 
@@ -66,20 +78,10 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
         PV2.x += P2.x;
         PV2.y += P2.y;
 
-        printf("V0 = (%f,%f)\n", interpolatedPoints[i-2].x, interpolatedPoints[i-2].y);
-        printf("V1 = (%f,%f)\n", PV1.x, PV1.y);
-        printf("V2 = (%f,%f)\n", PV2.x, PV2.y);
-        printf("V3 = (%f,%f)\n", interpolatedPoints[i-1].x, interpolatedPoints[i-1].y);
 
         Vec3d V1 = Vec3d(PV1.x, PV1.y, 1);
         Vec3d V2 = Vec3d(PV2.x, PV2.y, 1);
 
-        //if((V0[0] >= V1[0]) ||  (V1[0] >= V2[0]) || (V2[0] >= V3[0]))
-        //{
-        //    printf("*************loop back!\n");
-        //    //V0[0] = min(min(V0[0],V1[0]),min(V2[0],V3[0]));
-        //    //V1[0] = V2[0] = V3[0] = V0[0];
-        //}
 
         float prev_x = 0.0;
         for(float u = 0.0; u < 1.0; u+=0.04)
@@ -93,21 +95,39 @@ void CatmullRomCurveEvaluator::evaluateCurve(const std::vector<Point>& ptvCtrlPt
                 ((u*u*u)*V3);
 
             //
-            // X Minimum = P1.x
-            // X Maximum = P2.x
+            // Ensure curve is a continuous function of time by
+            // checking that x is increasing monotonically.
             //
             if(Qu[0] > prev_x)
             {
                 prev_x = Qu[0];
 
-                Qu[0] = (Qu[0] > P2.x) ? P2.x : Qu[0];
-                Qu[0] = (Qu[0] < P1.x) ? P1.x : Qu[0];
+                //
+                // Insure Qu.x is less than P2
+                //
+                if(Qu[0] > P2.x)
+                {
+                    Qu[0] = P2.x;
+                    Qu[1] = P2.y;
+                }
 
-                printf("Qu = (%f,%f)\n", Qu[0], Qu[1]);
+                //
+                // Insure Qu.x > P1
+                //
+                if(Qu[0] < P1.x)
+                {
+                    Qu[0] = P1.x;
+                    Qu[1] = P1.y;
+                }
 
                 ptvEvaluatedCurvePts.push_back(Point(Qu[0], Qu[1]));
             }
         }
+
+        //
+        // Add the final point to prevent discontinuity for overlapping curves
+        //
+        ptvEvaluatedCurvePts.push_back(Point(V3[0], V3[1]));
 
         i++;
     }
