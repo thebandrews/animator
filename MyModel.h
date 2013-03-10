@@ -182,6 +182,9 @@ public:
     // Public methods
     //
     ParticleSystem* getParticleSystem();
+    Mat4f getModelViewMatrix();
+    void SpawnParticles( Mat4f cameraTransform );
+
     void load();
     void tick();
     void drawModel();
