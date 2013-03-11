@@ -189,7 +189,7 @@ void ParticleSystem::SpawnParticle(Vec3d point)
     {
         //printf("spawn particle (%f,%f,%f)\n", point[0], point[1], point[2]);
         Particle* p = new Particle;
-        p->m = 1;
+        p->m = 1.0;  // Set some arbitrary mass
         p->x = new Vec3d(point);
         p->start = new Vec3d(point);
         p->v = new Vec3d(0,20,15); // Test some starting velocities(0,20,15) is a good start...
@@ -287,12 +287,32 @@ void ParticleSystem::ClearForces()
 
 void ParticleSystem::ComputeForces()
 {
+    double k_drag = -2.0; //Some arbitrary drag coefficient.
     int i;
     for(i=0; i < particles_.size(); i++)
     {
-        (*particles_[i]->f)[0] = 0.0;
-        (*particles_[i]->f)[1] = -150;  //Gravitational constant in the -y direction
-        (*particles_[i]->f)[2] = 0.0;
+        double f_x = 0.0;
+        double f_y = 0.0; //-150*(particles_[i]->m); 
+        double f_z = 0.0;
+
+        //
+        // Compute Force #1 Gravity
+        //
+        f_y = -150*(particles_[i]->m); //Gravitational constant in the -y direction
+
+        //
+        // Compute Force #2 drag
+        //
+        f_x = (*particles_[i]->v)[0]*k_drag;
+        f_y = f_y + (*particles_[i]->v)[1]*k_drag;
+        f_z =  (*particles_[i]->v)[2]*k_drag;
+
+        //
+        // Store the force values in the particle struct
+        //
+        (*particles_[i]->f)[0] = f_x;
+        (*particles_[i]->f)[1] = f_y;
+        (*particles_[i]->f)[2] = f_z;
     }
 }
 
