@@ -26,6 +26,14 @@
 #include "vec.h"
 #include "properties.h"
 
+typedef struct{
+    float m; /* mass */
+    Vec3d *x; /* position vector */
+    Vec3d *start; /* start position vector */
+    Vec3d *v; /* velocity vector */
+    Vec3d *f; /* force accumulator */
+} Particle;
+
 class ParticleSystem {
 public:
 
@@ -78,6 +86,20 @@ public:
     void setDirty(bool d) { dirty = d; }
     void setGroundPlane(double width, double depth, double hight);
 
+    //
+    // Witkin Functions
+    //
+    int ParticleDims();
+    void ParticleGetState(double *dst);
+    void ParticleSetState(double *src);
+    void ParticleDerivative(double *dst);
+    void EulerStep(double DeltaT);
+
+    void ClearForces();
+    void ComputeForces();
+    void ScaleVector(double *src, int size, double scale);
+    void AddVectors(double *a, double *b, double *dst, int size);
+
 
 protected:
 
@@ -93,8 +115,9 @@ protected:
     bool simulate;                      // flag for simulation mode
     bool dirty;                         // flag for updating ui (don't worry about this)
 
-    Vec3d* particle_pos;                // Location of our particle
-    Vec3d* particle_start;              // Starting location of our particle
+    std::vector<Particle*> particles_;
+    //Vec3d* particle_pos;                // Location of our particle
+    //Vec3d* particle_start;              // Starting location of our particle
 
     //
     // Ground plane
