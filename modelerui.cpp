@@ -1408,6 +1408,8 @@ void ModelerUserInterface::setTime(float t) {
 void ModelerUserInterface::stop() {
 	animating = false;
 
+    ps->resetSimulation(graph->currTime());
+
 	finishSavingMovie();
 	
 	// Show play icon on play button

@@ -113,7 +113,7 @@ void MyModel::SpawnParticles( Mat4d cameraTransform )
     **
     ***************************************************************/
     
-    ps.SpawnParticle( Vec3d(worldPoint[0], worldPoint[1], worldPoint[2]));
+    ps.SpawnParticle( Vec3d(worldPoint[0], worldPoint[1] + 4.0, worldPoint[2]));
 
     return;
 }

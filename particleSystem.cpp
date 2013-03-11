@@ -80,6 +80,16 @@ void ParticleSystem::startSimulation(float t)
 void ParticleSystem::stopSimulation(float t)
 {
     // YOUR CODE HERE
+
+    // These values are used by the UI
+    simulate = false;
+    dirty = true;
+
+}
+
+/** Reset the simulation */
+void ParticleSystem::resetSimulation(float t)
+{
     std::vector<Particle*>::iterator iter;
 
     //
@@ -96,16 +106,7 @@ void ParticleSystem::stopSimulation(float t)
     particles_.clear();
 
     // These values are used by the UI
-    simulate = false;
-    dirty = true;
-
-}
-
-/** Reset the simulation */
-void ParticleSystem::resetSimulation(float t)
-{
-    // These values are used by the UI
-    simulate = false;
+    //simulate = false;
     dirty = true;
 
 }
@@ -186,12 +187,12 @@ void ParticleSystem::SpawnParticle(Vec3d point)
     //
     if(particles_.size() == 0)
     {
-        printf("spawn particle (%f,%f,%f)\n", point[0], point[1], point[2]);
+        //printf("spawn particle (%f,%f,%f)\n", point[0], point[1], point[2]);
         Particle* p = new Particle;
         p->m = 1;
         p->x = new Vec3d(point);
         p->start = new Vec3d(point);
-        p->v = new Vec3d(0,0,0);
+        p->v = new Vec3d(0,20,15); // Test some starting velocities(0,20,15) is a good start...
         p->f = new Vec3d(0,0,0);
         particles_.push_back(p);
 
