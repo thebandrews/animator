@@ -121,8 +121,6 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
         //
         if(prevT != t)
         {
-            float rest = restitution.getValue();
-
             std::vector<Particle*>::iterator iter;
 
             for(iter = particles_.begin(); iter != particles_.end(); iter++)
@@ -159,7 +157,7 @@ void ParticleSystem::drawParticles(float t)
             Vec3d particle = (*(*iter)->x);
             glPushMatrix();
             glTranslatef(particle[0],particle[1],particle[2]);
-            drawSphere(1);
+            drawSphere((*iter)->radius);
             glPopMatrix();
         }
     }
@@ -190,6 +188,7 @@ void ParticleSystem::SpawnParticle(Vec3d point)
         //printf("spawn particle (%f,%f,%f)\n", point[0], point[1], point[2]);
         Particle* p = new Particle;
         p->m = 1.0;  // Set some arbitrary mass
+        p->radius = 1.0;
         p->x = new Vec3d(point);
         p->start = new Vec3d(point);
         p->v = new Vec3d(0,20,15); // Test some starting velocities(0,20,15) is a good start...
@@ -266,10 +265,71 @@ void ParticleSystem::EulerStep(double DeltaT)
     ParticleGetState(temp2); /* get state */
     AddVectors(temp1,temp2,temp2,buffer_size); /* add -> temp2 */
     ParticleSetState(temp2); /* update state */
+    CollisionDetection();
     //p->t += DeltaT; /* update time */
 
     delete[] temp1;
     delete[] temp2;
+}
+
+
+void ParticleSystem::CollisionDetection()
+{
+    const float SURFACE_EPSILON = 0.35;
+    float rest = restitution.getValue();
+    Vec3d N = planeNormal;
+
+    int i;
+    for(i=0; i < particles_.size(); i++)
+    {
+        Vec3d P(*(particles_[i]->x));
+        P[1] -= particles_[i]->radius;
+
+        //
+        // Check to see if the particle is still above the plane
+        //
+        /*if(((P[0] >= -planePos[0]/2) && (P[0] <= planePos[0]/2)) &&
+            ((P[1] >= -planePos[1]/2) && (P[1] <= -planePos[1]/2)))
+        {*/
+            //printf("******Above Plane!\n");
+            Vec3d X(P);
+            X[1] = planePos[2];
+
+            //printf("******************X: (%f,%f,%f)\n", X[0], X[1], X[2]);
+            //printf("******************N: (%f,%f,%f)\n", N[0], N[1], N[2]);
+
+            double XdotP = (X-P)*N;
+
+            //
+            // Check to see if we have a collision
+            //
+            if(XdotP <= SURFACE_EPSILON)
+            {
+                Vec3d V(*(particles_[i]->v));
+
+                Vec3d v_n = (N*V)*N;
+                Vec3d v_t = V-v_n;
+
+                Vec3d v_p = v_t-((rest)*v_n);
+
+                if(v_p*N <= -2.0)
+                {
+                    //(*particles_[i]->v)[0] = v_p[0];
+                    (*particles_[i]->v)[1] = v_p[1];
+
+                     (*particles_[i]->x)[1] = planePos[2] + (particles_[i]->radius);
+                    //(*particles_[i]->v)[2] = v_p[0];
+                }
+                else
+                {
+                    (*particles_[i]->v)[1] = 0.0;
+
+                    (*particles_[i]->x)[1] = planePos[2] + (particles_[i]->radius);
+                }
+            }
+
+            //}
+    }
 }
 
 
@@ -336,10 +396,9 @@ void ParticleSystem::AddVectors(double *a, double *b, double *dst, int size)
 }
 
 
-void ParticleSystem::setGroundPlane(double width, double depth, double hight)
+void ParticleSystem::setGroundPlane(Vec3d position, Vec3d normal)
 {
-    planeWidth = width;
-    planeDepth = depth;
-    planeHight = hight;
+    planePos = position;
+    planeNormal = normal;
 }
 

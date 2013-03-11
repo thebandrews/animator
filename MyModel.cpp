@@ -421,7 +421,7 @@ void MyModel::draw() {
     //
     // Draw the floor
     //
-    ps.setGroundPlane(100,100,-2);
+    ps.setGroundPlane(Vec3d(100,100,-2), Vec3d(0,-1,0));
     grass.use();
 
     glBegin(GL_QUADS);

@@ -28,6 +28,7 @@
 
 typedef struct{
     float m; /* mass */
+    double radius;
     Vec3d *x; /* position vector */
     Vec3d *start; /* start position vector */
     Vec3d *v; /* velocity vector */
@@ -84,7 +85,7 @@ public:
     bool isSimulate() { return simulate; }
     bool isDirty() { return dirty; }
     void setDirty(bool d) { dirty = d; }
-    void setGroundPlane(double width, double depth, double hight);
+    void setGroundPlane(Vec3d position, Vec3d normal);
 
     //
     // Witkin Functions
@@ -93,6 +94,7 @@ public:
     void ParticleGetState(double *dst);
     void ParticleSetState(double *src);
     void ParticleDerivative(double *dst);
+    void CollisionDetection();
     void EulerStep(double DeltaT);
 
     void ClearForces();
@@ -122,7 +124,8 @@ protected:
     //
     // Ground plane
     //
-    double planeWidth, planeDepth, planeHight;
+    Vec3d planePos;
+    Vec3d planeNormal;
 };
 
 
