@@ -65,8 +65,9 @@ public:
 
     // This function should clear out your data structure
     // of baked particles (without leaking memory).
-    virtual void clearBaked();	
+    virtual void clearBaked();
 
+    void SpawnParticle(Vec3d point);
 
     // These accessor fxns are implemented for you
     float getBakeStartTime() { return bake_start_time; }
@@ -75,6 +76,7 @@ public:
     bool isSimulate() { return simulate; }
     bool isDirty() { return dirty; }
     void setDirty(bool d) { dirty = d; }
+    void setGroundPlane(double width, double depth, double hight);
 
 
 protected:
@@ -91,6 +93,13 @@ protected:
     bool simulate;                      // flag for simulation mode
     bool dirty;                         // flag for updating ui (don't worry about this)
 
+    Vec3d* particle_pos;                // Location of our particle
+    Vec3d* particle_start;              // Starting location of our particle
+
+    //
+    // Ground plane
+    //
+    double planeWidth, planeDepth, planeHight;
 };
 
 

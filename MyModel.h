@@ -17,7 +17,6 @@ protected:
     ///////////////////////////////// PARTICLES ///////////////////////////////////
     ParticleSystem ps;
 
-
     ///////////////////////////////// TEXTURES ////////////////////////////////////
     Texture2D texture;
 
@@ -75,7 +74,6 @@ protected:
 
     // Right Foot
     RangeProperty RFootRotateX, RFootRotateZ;
-
 
 
 public:
@@ -182,8 +180,8 @@ public:
     // Public methods
     //
     ParticleSystem* getParticleSystem();
-    Mat4f getModelViewMatrix();
-    void SpawnParticles( Mat4f cameraTransform );
+    Mat4d getModelViewMatrix();
+    void SpawnParticles( Mat4d cameraTransform );
 
     void load();
     void tick();

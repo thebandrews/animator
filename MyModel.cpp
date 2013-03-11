@@ -22,7 +22,7 @@ void MyModel::load() {
 }
 
 
-Mat4f MyModel::getModelViewMatrix()
+Mat4d MyModel::getModelViewMatrix()
 {
     /**************************
     **
@@ -38,9 +38,9 @@ Mat4f MyModel::getModelViewMatrix()
     **
     *******************************/
 
-    GLfloat m[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX, m);
-    Mat4f matMV(m[0], m[1], m[2], m[3],
+    GLdouble m[16];
+    glGetDoublev(GL_MODELVIEW_MATRIX, m);
+    Mat4d matMV(m[0], m[1], m[2], m[3],
         m[4], m[5], m[6], m[7],
         m[8], m[9], m[10], m[11],
         m[12], m[13], m[14], m[15] );
@@ -50,7 +50,7 @@ Mat4f MyModel::getModelViewMatrix()
 }
 
 
-void MyModel::SpawnParticles( Mat4f cameraTransform )
+void MyModel::SpawnParticles( Mat4d cameraTransform )
 {
     /****************************************************************
     **
@@ -80,14 +80,16 @@ void MyModel::SpawnParticles( Mat4f cameraTransform )
     **
     **  ModelTransforms = InverseCameraTransforms * MODELVIEW
     **    
-    ********************************************************************/	
-    /*...
-    ... Get the current MODELVIEW matrix.
-    ... "Undo" the camera transforms from the MODELVIEW matrix
-    ... by multiplying Inverse( CameraTransforms ) * CurrentModelViewMatrix.
-    ... Store the result of this in a local variable called WorldMatrix.
-    ...*/
-
+    ********************************************************************/
+    
+    //
+    // Get the current MODELVIEW matrix.
+    // "Undo" the camera transforms from the MODELVIEW matrix
+    // by multiplying Inverse( CameraTransforms ) * CurrentModelViewMatrix.
+    // Store the result of this in a local variable called WorldMatrix.
+    //
+    Mat4d modelView = getModelViewMatrix();
+    Mat4d WorldMatrix = cameraTransform.inverse() * modelView;
 
     /*****************************************************************
     **
@@ -101,10 +103,8 @@ void MyModel::SpawnParticles( Mat4f cameraTransform )
     **  the WorldMatrix.
     **
     ******************************************************************/
-    /*...
-    ... WorldPoint = WorldMatrix * Vector(0, 0, 0, 1)
-    ...*/
 
+    Vec4d worldPoint = WorldMatrix * Vec4d(0.0, 0.0, 0.0, 1);
 
     /*****************************************************************
     **
@@ -112,9 +112,8 @@ void MyModel::SpawnParticles( Mat4f cameraTransform )
     **  can finally add it to our system!
     **
     ***************************************************************/
-    /*...
-    ...AddParticleStartingAt( WorldPoint ) 
-    ...*/
+    
+    ps.SpawnParticle( Vec3d(worldPoint[0], worldPoint[1], worldPoint[2]));
 
     return;
 }
@@ -154,8 +153,6 @@ void MyModel::drawModel() {
         divisions = 8; break;
     }
 
-    Mat4f CameraMatrix = getModelViewMatrix();
-
     // Remember our current modelview matrix, which is in world space.
     glPushMatrix();
 
@@ -164,6 +161,8 @@ void MyModel::drawModel() {
 
     // Rotate around the Y-axis
     glRotatef(rotateY.getValue(), 0, 1, 0);
+
+    Mat4d CameraMatrix = getModelViewMatrix();
 
     // Lower Torso
     glTranslatef(0.0,0.8,0.0);
@@ -282,6 +281,12 @@ void MyModel::drawModel() {
     glPushMatrix();
     glTranslatef(0,-0.9,0);
     drawRevolution("head.apts",1);
+
+    //
+    // Spawn some particles
+    //
+    SpawnParticles( CameraMatrix );
+
     glPopMatrix(); // Head
     glPopMatrix(); // Neck
 
@@ -321,13 +326,8 @@ void MyModel::drawModel() {
     glTranslatef(0,-1.5,0);
     drawRevolution("Hand.apts",1);
 
-    //
-    // Spawn some particles from the left hand
-    //
-    SpawnParticles( CameraMatrix );
 
     glPopMatrix(); // Left Hand
-
     glPopMatrix(); // Left Hand Joint
     glPopMatrix(); // Lower Left Arm
     glPopMatrix(); // Lower Left Arm Joint
@@ -421,6 +421,7 @@ void MyModel::draw() {
     //
     // Draw the floor
     //
+    ps.setGroundPlane(100,100,-2);
     grass.use();
 
     glBegin(GL_QUADS);

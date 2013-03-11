@@ -18,11 +18,12 @@ static float prevT;
 * Constructors
 ***************/
 
-ParticleSystem::ParticleSystem() : restitution("Restitution", 0.0f, 2.0f, 1.0f, 0.1f)
+ParticleSystem::ParticleSystem() : 
+    restitution("Restitution", 0.0f, 2.0f, 1.0f, 0.1f)
 {
-    // YOUR CODE HERE
+    particle_pos = NULL;
+    particle_start = NULL;
 
-    
     // Leave these here; the UI needs them to work correctly.
     dirty = false;
     simulate = false;
@@ -38,6 +39,8 @@ ParticleSystem::ParticleSystem() : restitution("Restitution", 0.0f, 2.0f, 1.0f, 
 ParticleSystem::~ParticleSystem() 
 {
     // TODO
+    delete particle_pos;
+    delete particle_start;
 }
 
 
@@ -87,10 +90,22 @@ void ParticleSystem::resetSimulation(float t)
 /** Compute forces and update particles **/
 void ParticleSystem::computeForcesAndUpdateParticles(float t)
 {
-    // YOUR CODE HERE
-    float rest = restitution.getValue();
+    if(simulate )
+    {
+        //
+        // Only compute forces if time updates.
+        //
+        if(prevT != t)
+        {
+            float rest = restitution.getValue();
+            Vec3d particle = *particle_start;
+            Vec3d new_pos = particle;
+            new_pos[1] = max(planeHight+1,(new_pos[1] - t));
 
-    printf("Restitution = %f\n", rest);
+            *particle_pos = new_pos;
+        }
+    }
+
 
     // Debugging info
     /*if( t - prevT > .08 )
@@ -102,9 +117,15 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
 /** Render particles */
 void ParticleSystem::drawParticles(float t)
 {
-    // YOUR CODE HERE
+    if(simulate)
+    {
+        Vec3d particle = *particle_pos;
+        glPushMatrix();
+        glTranslatef(particle[0],particle[1],particle[2]);
+        drawSphere(1);
+        glPopMatrix();
+    }
 }
-
 
 
 
@@ -119,6 +140,26 @@ void ParticleSystem::bakeParticles(float t)
 void ParticleSystem::clearBaked()
 {
     // TODO (baking is extra credit)
+}
+
+void ParticleSystem::SpawnParticle(Vec3d point)
+{
+    //
+    // Only spawn a new particle if we don't already have one.
+    //
+    if(particle_pos == NULL)
+    {
+        //printf("spawn particle (%f,%f,%f)\n", point[0], point[1], point[2]);
+        particle_pos = new Vec3d(point);
+        particle_start = new Vec3d(point);
+    }
+}
+
+void ParticleSystem::setGroundPlane(double width, double depth, double hight)
+{
+    planeWidth = width;
+    planeDepth = depth;
+    planeHight = hight;
 }
 
 
