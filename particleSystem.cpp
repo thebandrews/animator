@@ -19,7 +19,7 @@ static float prevT;
 ***************/
 
 ParticleSystem::ParticleSystem() : 
-    restitution("Restitution", 0.0f, 2.0f, 1.0f, 0.1f)
+    restitution("Restitution", 0.0f, 2.0f, 0.9f, 0.1f)
 {
     particles_.clear();
 
@@ -126,13 +126,6 @@ void ParticleSystem::computeForcesAndUpdateParticles(float t)
             for(iter = particles_.begin(); iter != particles_.end(); iter++)
             {
                 EulerStep(t - prevT);
-                /*Vec3d particle = (*(*iter)->x);
-                Vec3d new_pos = particle;
-                new_pos[1] = max(planeHight+1,(new_pos[1] - t));
-
-                (*(*iter)->x)[0] = new_pos[0];
-                (*(*iter)->x)[1] = new_pos[1];
-                (*(*iter)->x)[2] = new_pos[2];*/
             }
         }
     }
@@ -181,22 +174,18 @@ void ParticleSystem::clearBaked()
 void ParticleSystem::SpawnParticle(Vec3d point)
 {
     //
-    // Only spawn a new particle if we don't already have one.
+    // Only spawn new particle if we don't already have some.
     //
     if(particles_.size() == 0)
     {
-        //printf("spawn particle (%f,%f,%f)\n", point[0], point[1], point[2]);
-        Particle* p = new Particle;
-        p->m = 1.0;  // Set some arbitrary mass
-        p->radius = 1.0;
-        p->x = new Vec3d(point);
-        p->start = new Vec3d(point);
-        p->v = new Vec3d(0,20,15); // Test some starting velocities(0,20,15) is a good start...
-        p->f = new Vec3d(0,0,0);
-        particles_.push_back(p);
-
-        /*particle_pos = new Vec3d(point);
-        particle_start = new Vec3d(point);*/
+        Particle* p1 = new Particle;
+        p1->m = 0.8;  // Set some arbitrary mass
+        p1->radius = 1.0;
+        p1->x = new Vec3d(point);
+        p1->start = new Vec3d(point);
+        p1->v = new Vec3d(0,20,35); // Test some starting velocities(0,20,15) is a good start...
+        p1->f = new Vec3d(0,0,0);
+        particles_.push_back(p1);
     }
 }
 
@@ -264,39 +253,37 @@ void ParticleSystem::EulerStep(double DeltaT)
     ScaleVector(temp1,buffer_size, DeltaT); /* scale it */
     ParticleGetState(temp2); /* get state */
     AddVectors(temp1,temp2,temp2,buffer_size); /* add -> temp2 */
+    CollisionDetection(temp2);
     ParticleSetState(temp2); /* update state */
-    CollisionDetection();
-    //p->t += DeltaT; /* update time */
 
     delete[] temp1;
     delete[] temp2;
 }
 
 
-void ParticleSystem::CollisionDetection()
+void ParticleSystem::CollisionDetection(double *src)
 {
-    const float SURFACE_EPSILON = 0.35;
+    const float SURFACE_EPSILON = 0.5;
     float rest = restitution.getValue();
     Vec3d N = planeNormal;
 
     int i;
     for(i=0; i < particles_.size(); i++)
     {
-        Vec3d P(*(particles_[i]->x));
+        Vec3d P(*(src), *(src+1), *(src+2));
         P[1] -= particles_[i]->radius;
 
         //
         // Check to see if the particle is still above the plane
         //
-        /*if(((P[0] >= -planePos[0]/2) && (P[0] <= planePos[0]/2)) &&
-            ((P[1] >= -planePos[1]/2) && (P[1] <= -planePos[1]/2)))
-        {*/
-            //printf("******Above Plane!\n");
+        double plane_edge_x = planePos[0]/2;
+        double plane_edge_z = planePos[1]/2;
+
+        if(!((P[0] > plane_edge_x) || (P[0] < -plane_edge_x) ||
+           (P[2] > plane_edge_z) || (P[2] < -plane_edge_z)))
+        {
             Vec3d X(P);
             X[1] = planePos[2];
-
-            //printf("******************X: (%f,%f,%f)\n", X[0], X[1], X[2]);
-            //printf("******************N: (%f,%f,%f)\n", N[0], N[1], N[2]);
 
             double XdotP = (X-P)*N;
 
@@ -305,30 +292,29 @@ void ParticleSystem::CollisionDetection()
             //
             if(XdotP <= SURFACE_EPSILON)
             {
-                Vec3d V(*(particles_[i]->v));
+                Vec3d V(*(src+3), *(src+4), *(src+5));
 
-                Vec3d v_n = (N*V)*N;
+                double NdotV = (N*V);
+                Vec3d v_n = NdotV*N;
+
                 Vec3d v_t = V-v_n;
 
                 Vec3d v_p = v_t-((rest)*v_n);
 
-                if(v_p*N <= -2.0)
+                if(v_p*N <= 0)
                 {
-                    //(*particles_[i]->v)[0] = v_p[0];
-                    (*particles_[i]->v)[1] = v_p[1];
-
-                     (*particles_[i]->x)[1] = planePos[2] + (particles_[i]->radius);
-                    //(*particles_[i]->v)[2] = v_p[0];
+                    *(src+3) = v_p[0];
+                    *(src+4) = v_p[1];
+                    *(src+5) = v_p[2];
+                    *(src+1) = planePos[2] + (particles_[i]->radius);
                 }
                 else
                 {
-                    (*particles_[i]->v)[1] = 0.0;
-
-                    (*particles_[i]->x)[1] = planePos[2] + (particles_[i]->radius);
+                    *(src+4) = 0.0;
+                    *(src+1) = planePos[2] + (particles_[i]->radius);
                 }
             }
-
-            //}
+        }
     }
 }
 
@@ -347,7 +333,7 @@ void ParticleSystem::ClearForces()
 
 void ParticleSystem::ComputeForces()
 {
-    double k_drag = -2.0; //Some arbitrary drag coefficient.
+    double k_drag = -0.5; //Some arbitrary drag coefficient.
     int i;
     for(i=0; i < particles_.size(); i++)
     {

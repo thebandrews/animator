@@ -94,7 +94,7 @@ public:
     void ParticleGetState(double *dst);
     void ParticleSetState(double *src);
     void ParticleDerivative(double *dst);
-    void CollisionDetection();
+    void CollisionDetection(double *src);
     void EulerStep(double DeltaT);
 
     void ClearForces();
