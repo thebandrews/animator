@@ -150,6 +150,9 @@ void ParticleSystem::drawParticles(float t)
             Vec3d particle = (*(*iter)->x);
             glPushMatrix();
             glTranslatef(particle[0],particle[1],particle[2]);
+            setDiffuseColor( 0.75, 0.0, 0.0 );
+            setSpecularColor(0.2, 0.0, 0.0);
+            setAmbientColor( 0.75, 0.0, 0.0 );
             drawSphere((*iter)->radius);
             glPopMatrix();
         }

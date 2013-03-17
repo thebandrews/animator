@@ -24,6 +24,7 @@ protected:
 ///////////////////////////////// TEXTURES ////////////////////////////////////
     Texture2D texture;
 
+
 ///////////////////////////////// SHADERS /////////////////////////////////////
     ShaderProgram shader;
 
@@ -33,11 +34,17 @@ protected:
     PointLight pointLight;
     DirectionalLight directionalLight;
 
-    // My Model
+    // My Model #1
     MyModel _myModel_1;
 
-    // My Model
-    //MyModel _myModel_2;
+    // My Model #2
+    MyModel _myModel_2;
+
+    // My Model #3
+    MyModel _myModel_3;
+
+    // My Model #4
+    MyModel _myModel_4;
 
 public:
     ParticleSystem ps;
@@ -51,9 +58,17 @@ public:
         // name for the model.
         Model("Scene"),
 
+        _myModel_1(1, 0.68, 0.79, 5.0, 0.0, -2.0),
+
+        _myModel_2(.2, 0.2, 0.2, 0.0, 0.0, 0.0),
+
+        _myModel_3(.8, 0, 0, -5.0, 0.0, -2.0),
+
+        _myModel_4(.8, 0.8, 0.8, 0.0, 0.0, -5.0),
+
         // Construct textures and shaders. 
         // They won't be loaded until the model is drawn for the first time.
-        texture("checkers.png"),
+        texture("floor_5.png"),
         shader("shader.vert", "shader.frag", NULL),
 
         // Call the constructors for the lights
@@ -70,6 +85,9 @@ public:
         properties.add(pointLight.getProperties())
                   .add(directionalLight.getProperties());
         properties.add(_myModel_1.getProperties());
+        properties.add(_myModel_2.getProperties());
+        properties.add(_myModel_3.getProperties());
+        properties.add(_myModel_4.getProperties());
         //properties.add(_myModel_2.getProperties());
 
         // Finally, add all the properties to this model's PropertyGroup.
@@ -106,9 +124,43 @@ public:
         directionalLight.draw();
 
 
-        // Draw my model
+        // Draw model men
         _myModel_1.draw();
-        //_myModel_2.draw();
+        _myModel_2.draw();
+        _myModel_3.draw();
+        _myModel_4.draw();
+
+
+        //
+        // Draw the floor
+        //
+        ps.setGroundPlane(Vec3d(100,100,-2), Vec3d(0,-1,0));
+        texture.use();
+
+        //setDiffuseColor( .95, .95, .5);
+        //setAmbientColor( .95, .95, .5 );
+
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 1); // specify the texture coordinate
+        glNormal3f(0, 1, 0); // specify the surface's normal at this vertex
+        glVertex3f(-50, -2, -50); // both before its corresponding vertex
+
+        glTexCoord2f(1, 1);
+        glNormal3f(0, 1, 0);
+        glVertex3f(50, -2, -50);
+
+        glTexCoord2f(1, 0);
+        glNormal3f(0, 1, 0);
+        glVertex3f(50, -2, 50);
+
+        glTexCoord2f(0, 0);
+        glNormal3f(0, 1, 0);
+        glVertex3f(-50, -2, 50);
+        glEnd();
+
+        // Stop applying textures to objects
+        glBindTexture(GL_TEXTURE_2D, 0);
+
     }
 };
 

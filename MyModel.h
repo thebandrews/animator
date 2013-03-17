@@ -20,9 +20,13 @@ protected:
     ///////////////////////////////// TEXTURES ////////////////////////////////////
     Texture2D texture;
 
-    Texture2D grass;
+    //Texture2D grass;
 
-    Texture2D sky;
+    //Texture2D sky;
+
+    double m_r,m_g,m_b;
+
+    double m_x,m_y,m_z;
 
     ///////////////////////////////// SHADERS /////////////////////////////////////
     //ShaderProgram shader;
@@ -79,16 +83,22 @@ protected:
 public:
 
     /** Construct the scene */
-    MyModel() :
+    MyModel(double r, double g, double b, double x, double y, double z) :
         // You have to call the parent class's constructor, to provide a
         // name for the model.
         Model("MyModel"),
+        m_r(r), // Color r,g,b
+        m_g(g),
+        m_b(b),
+        m_x(x), // Color r,g,b
+        m_y(y),
+        m_z(z),
         ps(),
         // Construct textures and shaders. 
         // They won't be loaded until the model is drawn for the first time.
-        texture("Wood4.png"),
-        grass("Grass2.png"),
-        sky("Sky2.png"),
+        texture("checkers.png"),
+        //grass("checkers.png"),
+        //sky("Sky2.png"),
 
         rotateX("Rotate X", -180, 180, 0, 1),
         rotateY("Rotate Y", -180, 180, 0, 1),

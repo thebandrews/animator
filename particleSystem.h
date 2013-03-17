@@ -24,6 +24,7 @@
 #pragma warning(disable : 4305)
 
 #include "vec.h"
+#include "vault.h"
 #include "properties.h"
 
 typedef struct{
@@ -39,7 +40,6 @@ class ParticleSystem {
 public:
 
     RangeProperty restitution;
-
 
     /** Constructor **/
     ParticleSystem();
